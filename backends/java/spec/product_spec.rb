@@ -38,6 +38,30 @@ describe 'Product API' do
       expect(response.code).to eq(200)
       expect(JSON.parse(response.body)).to eq([teddy_bear_response])
     end
+
+    describe "sorting" do
+      let(:baby_bear_params) {{name: 'BabyBear', description: 'Baby Bear' }}
+      let(:koala_bear_params) {{ name: 'KoalaBear', description: 'Koala Bear' }}
+      let(:grizzly_bear_params) {{ name: 'GrizzlyBear', description: 'Grizzly Bear' }}
+
+      before do
+        [baby_bear_params, koala_bear_params, grizzly_bear_params].each do |params|
+          HTTParty.post('http://localhost:8080/products', {:body => params.to_json, :headers => {'Content-Type' => 'application/json' }})
+        end
+      end
+
+      it "can sort by name (ascending)" do
+        response = HTTParty.get('http://localhost:8080/products?sort=name')
+        sorted_bears = JSON.parse(response.body).collect{ |bear| bear["name"] }
+        expect(sorted_bears).to eq(['BabyBear', 'GrizzlyBear', 'KoalaBear', 'TeddyBear'])
+      end
+
+      it "can sort by name (descending)" do
+        response = HTTParty.get('http://localhost:8080/products?sort=-name')
+        sorted_bears = JSON.parse(response.body).collect{ |bear| bear["name"] }
+        expect(sorted_bears).to eq(['TeddyBear', 'KoalaBear', 'GrizzlyBear', 'BabyBear'])
+      end
+    end
   end
 
   describe 'GET product/:id_or_name' do

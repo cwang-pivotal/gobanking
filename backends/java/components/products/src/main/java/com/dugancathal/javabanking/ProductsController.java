@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
+import java.util.List;
 
 @RestController
 public class ProductsController {
@@ -12,8 +12,8 @@ public class ProductsController {
 	private ProductRepository productRepository;
 
 	@RequestMapping(path="/products", method= RequestMethod.GET)
-	public Collection<Product> getProducts() {
-		return productRepository.all();
+	public List<Product> getProducts(@RequestParam(name="sort", required = false) String sort) {
+		return productRepository.getAll(sort);
 	}
 
 	@RequestMapping(path="/products/{id}", method= RequestMethod.GET)
